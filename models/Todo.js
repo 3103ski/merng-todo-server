@@ -13,8 +13,17 @@ const todoSchema = new Schema(
 			ref: 'User',
 			required: true,
 		},
+		masterId: {
+			type: Schema.Types.ObjectId,
+			ref: 'TodoList',
+			required: true,
+		},
 		listId: {
 			type: Schema.Types.ObjectId,
+			required: true,
+		},
+		listTitle: {
+			type: String,
 			required: true,
 		},
 		color: {
@@ -33,14 +42,16 @@ const todoSchema = new Schema(
 			type: Boolean,
 			default: false,
 		},
-		subTasks: {
-			type: Schema.Types.ObjectId,
-			ref: 'Todo',
-		},
 		dueDate: {
 			type: String,
-			default: null,
+			default: '',
 		},
+		subTasks: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: 'Todo',
+			},
+		],
 		participants: [
 			{
 				type: Schema.Types.ObjectId,

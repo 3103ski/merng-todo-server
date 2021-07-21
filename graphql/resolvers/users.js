@@ -27,12 +27,13 @@ module.exports = {
 		},
 		async getUsers() {
 			const users = await User.find();
-
 			return users;
 		},
 	},
 	Mutation: {
 		async login(_, { username, password }) {
+			console.log('Got to the username', username);
+			console.log('Got to the password', password);
 			const user = await User.findOne({ username });
 
 			if (!user) {

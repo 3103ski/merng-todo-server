@@ -11,11 +11,17 @@ module.exports = gql`
 	type Todo {
 		id: ID!
 		title: String!
-		creator: ID!
+		masterId: ID!
+		color: String!
+		listId: ID!
+		listTitle: String!
+		creatorId: ID!
 		isComplete: Boolean!
 		subTasks: [Todo]
 		isSubTask: Boolean
 		participants: [User]
+		dueDate: String
+		createdAt: String
 	}
 	input UpdateTodoInput {
 		title: String
@@ -32,6 +38,7 @@ module.exports = gql`
 	}
 	input UpdateTodoListInput {
 		title: String
+		dueDate: String
 		color: String
 	}
 	input RegisterInput {
@@ -44,21 +51,28 @@ module.exports = gql`
 		getUser(userId: ID!): User
 		getUsers: [User]
 		getTodoList(listId: ID!): TodoList!
+		getUserLists(userId: ID!): [TodoList]
+		getUserTodos(userId: ID!): [Todo]
 	}
 
 	type Mutation {
+		# Auth
 		register(registerInput: RegisterInput): User!
 		login(username: String!, password: String!): User!
-		createTodoList(title: String!, creatorId: ID!, color: String!): TodoList!
+		# write
+		createTodoList(title: String!, color: String!): TodoList!
+		addTodoListItem(masterId: ID!, listId: ID!, title: String!, isSubTask: Boolean): Todo!
+		# update
 		updateTodoList(listId: ID!, updatedContent: UpdateTodoListInput): TodoList!
-		updateTodo(todoId: ID!, updatedContent: UpdateTodoInput): Todo!
-		deleteTodo(todoId: ID!): Todo
-		addTodoListItem(
-			listId: ID!
-			creatorId: ID!
-			title: String!
+		updateTodo(
+			todoId: ID!
+			title: String
+			isComplete: Boolean
 			isSubTask: Boolean
-			color: String!
+			dueDate: String
+			isMyDay: Boolean
 		): Todo!
+		# delete
+		deleteTodo(todoId: ID!): Todo
 	}
 `;
