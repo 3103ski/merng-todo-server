@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Populate = require('../util/autoPopulate');
+// const Populate = require('../util/autoPopulate');
 
 const todoListSchema = new Schema(
 	{
@@ -36,8 +36,6 @@ const todoListSchema = new Schema(
 		timestamps: true,
 	}
 );
-
-todoListSchema.pre('findOne', Populate('todos')).pre('find', Populate('todos'));
 
 const TodoList = mongoose.model('TodoList', todoListSchema, 'todoLists');
 

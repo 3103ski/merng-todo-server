@@ -38,7 +38,7 @@ const todoSchema = new Schema(
 			type: Boolean,
 			default: false,
 		},
-		isMyDay: {
+		myDay: {
 			type: Boolean,
 			default: false,
 		},

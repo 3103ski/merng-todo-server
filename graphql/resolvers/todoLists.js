@@ -39,7 +39,20 @@ module.exports = {
 				return newTodoList;
 			}
 		},
-		async updateTodoList(_, { listId, updatedContent }) {
+		async updateTodoList(_, { listId, title, color }) {
+			console.log('The title :: ', title);
+			console.log('The color :: ', color);
+			console.log('The Id :: ', listId);
+			let updatedContent = {};
+
+			if (title) {
+				updatedContent.title = await title;
+			}
+
+			if (color) {
+				updatedContent.color = await color;
+			}
+
 			await TodoList.updateOne({ _id: listId }, { $set: { ...updatedContent } });
 
 			if (updatedContent.title) {
@@ -48,25 +61,26 @@ module.exports = {
 					{ $set: { listTitle: updatedContent.title } }
 				);
 			}
+
 			if (updatedContent.color) {
 				await Todo.updateMany(
 					{ masterId: listId },
 					{ $set: { color: { ...updatedContent }.color } }
 				);
 			}
+
 			return TodoList.findById(listId).then((list) => list);
 		},
+
 		async addTodoListItem(_, { masterId, listId, title, isSubTask = false }, context) {
 			const user = checkAuth(context);
 			if (user) {
 				let listHome;
-
 				if (isSubTask === true) {
 					listHome = await Todo.findById(listId);
 				} else {
 					listHome = await TodoList.findById(listId);
 				}
-
 				const newTodo = await new Todo({
 					creatorId: user.id,
 					listId,
@@ -89,29 +103,28 @@ module.exports = {
 				return newTodo;
 			}
 		},
-		async updateTodo(_, { todoId, isComplete, dueDate, title, isMyDay, isSubTask }) {
+		async updateTodo(_, { todoId, isComplete, dueDate, title, myDay, isSubTask, updateType }) {
 			const newContent = {};
-			console.log(isComplete);
 
-			if (isComplete !== null) {
-				console.log('building the new content');
-				newContent.isComplete = isComplete;
-				console.log('Is the content there', newContent);
+			switch (updateType) {
+				case 'toggleComplete':
+					newContent.isComplete = isComplete;
+					break;
+				case 'subTask':
+					newContent.isSubTask = isSubTask;
+					break;
+				case 'title':
+					newContent.title = title;
+					break;
+				case 'myDay':
+					newContent.myDay = myDay;
+					break;
+				case 'dueDate':
+					newContent.dueDate = dueDate;
+					break;
+				default:
+					return null;
 			}
-			if (dueDate) {
-				newContent.dueDate = dueDate;
-			}
-			if (title) {
-				newContent.title = title;
-			}
-			if (isMyDay) {
-				newContent.isMyDay = isMyDay;
-			}
-			if (isSubTask) {
-				newContent.isSubTask = isSubTask;
-			}
-
-			await Todo.updateOne({ _id: todoId }, { $set: { ...newContent } });
 
 			if (newContent.title) {
 				await Todo.updateMany(
@@ -120,13 +133,70 @@ module.exports = {
 				);
 			}
 
+			await Todo.updateOne({ _id: todoId }, { $set: { ...newContent } });
+
 			return Todo.findById(todoId).then((todo) => todo);
 		},
-		async deleteTodo(_, { todoId }) {
-			const todo = await Todo.findById(todoId);
-			if (todo) {
-				await Todo.findByIdAndDelete(todoId);
-				return todo;
+		async deleteTodo(_, { todoId }, context) {
+			const user = checkAuth(context);
+			if (user) {
+				const todo = await Todo.findById(todoId);
+				if (todo) {
+					await Todo.findByIdAndDelete(todoId);
+					return todo;
+				}
+			}
+		},
+		async deleteAllCompletedTodos(_, __, context) {
+			const user = checkAuth(context);
+			if (user) {
+				const removeTodos = await Todo.find({ creatorId: user.id, isComplete: true });
+				const removeIds = await removeTodos.map((todo) => todo._id);
+
+				Todo.deleteMany({ creatorId: user.id, isComplete: true })
+					.then(() => {
+						return removeIds;
+					})
+					.catch((err) => {
+						console.log('there was an error :: ', err);
+					});
+
+				return removeIds;
+			}
+		},
+		async deleteListCompletedTodos(_, { listId }, context) {
+			const user = checkAuth(context);
+			const removeTodos = await Todo.find({
+				creatorId: user.id,
+				isComplete: true,
+				listId: listId,
+			});
+			const removeIds = await removeTodos.map((todo) => todo._id);
+			if (user) {
+				Todo.deleteMany({ creatorId: user.id, isComplete: true, listId: listId })
+					.then(() => {
+						return { message: 'Deleted' };
+					})
+					.catch((err) => {
+						console.log('there was an error :: ', err);
+					});
+				return removeIds;
+			}
+		},
+		async deleteList(_, { listId }, context) {
+			const user = checkAuth(context);
+
+			if (user) {
+				const list = await TodoList.find({ _id: listId });
+				if (list) {
+					Todo.deleteMany({ listId }).then(() => {
+						TodoList.findOneAndDelete({ _id: listId }).then(() => {
+							console.log('deleted todo list');
+						});
+					});
+				} else {
+					console.log('something did not match', list.creatorId);
+				}
 			}
 		},
 	},

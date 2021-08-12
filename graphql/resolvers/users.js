@@ -32,8 +32,6 @@ module.exports = {
 	},
 	Mutation: {
 		async login(_, { username, password }) {
-			console.log('Got to the username', username);
-			console.log('Got to the password', password);
 			const user = await User.findOne({ username });
 
 			if (!user) {

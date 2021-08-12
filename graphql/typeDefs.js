@@ -19,6 +19,7 @@ module.exports = gql`
 		isComplete: Boolean!
 		subTasks: [Todo]
 		isSubTask: Boolean
+		myDay: Boolean!
 		participants: [User]
 		dueDate: String
 		createdAt: String
@@ -63,16 +64,20 @@ module.exports = gql`
 		createTodoList(title: String!, color: String!): TodoList!
 		addTodoListItem(masterId: ID!, listId: ID!, title: String!, isSubTask: Boolean): Todo!
 		# update
-		updateTodoList(listId: ID!, updatedContent: UpdateTodoListInput): TodoList!
+		updateTodoList(listId: ID!, color: String, title: String): TodoList!
 		updateTodo(
+			updateType: String!
 			todoId: ID!
 			title: String
 			isComplete: Boolean
 			isSubTask: Boolean
 			dueDate: String
-			isMyDay: Boolean
+			myDay: Boolean
 		): Todo!
 		# delete
 		deleteTodo(todoId: ID!): Todo
+		deleteAllCompletedTodos(userId: ID): [ID]
+		deleteListCompletedTodos(listId: ID): [ID]
+		deleteList(listId: ID): [ID]
 	}
 `;
