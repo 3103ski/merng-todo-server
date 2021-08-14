@@ -5,6 +5,20 @@ const userSchema = new Schema({
 	password: String,
 	email: String,
 	createdAt: String,
+	userSettings: {
+		darkMode: {
+			type: Boolean,
+			default: false,
+		},
+		darkText: {
+			type: Boolean,
+			default: false,
+		},
+		squareEdges: {
+			type: Boolean,
+			default: false,
+		},
+	},
 });
 
 module.exports = model('User', userSchema);

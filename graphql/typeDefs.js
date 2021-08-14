@@ -1,8 +1,14 @@
 const { gql } = require('apollo-server-express');
 
 module.exports = gql`
+	type UserSettings {
+		darkMode: Boolean
+		darkText: Boolean
+		squareEdges: Boolean
+	}
 	type User {
 		id: ID!
+		userSettings: UserSettings
 		email: String!
 		token: String!
 		username: String!

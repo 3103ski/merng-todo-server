@@ -33,6 +33,7 @@ module.exports = {
 	Mutation: {
 		async login(_, { username, password }) {
 			const user = await User.findOne({ username });
+			console.log('the user loggin in :: ', user._doc);
 
 			if (!user) {
 				throw new UserInputError('User not found', {
