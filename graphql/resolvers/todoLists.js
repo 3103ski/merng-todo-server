@@ -40,9 +40,6 @@ module.exports = {
 			}
 		},
 		async updateTodoList(_, { listId, title, color }) {
-			console.log('The title :: ', title);
-			console.log('The color :: ', color);
-			console.log('The Id :: ', listId);
 			let updatedContent = {};
 
 			if (title) {
@@ -142,6 +139,9 @@ module.exports = {
 			if (user) {
 				const todo = await Todo.findById(todoId);
 				if (todo) {
+					if (todo.subTasks && todo.subTasks.length > 0) {
+						await Todo.deleteMany({ listId: todoId });
+					}
 					await Todo.findByIdAndDelete(todoId);
 					return todo;
 				}
@@ -169,11 +169,11 @@ module.exports = {
 			const removeTodos = await Todo.find({
 				creatorId: user.id,
 				isComplete: true,
-				listId: listId,
+				masterId: listId,
 			});
 			const removeIds = await removeTodos.map((todo) => todo._id);
 			if (user) {
-				Todo.deleteMany({ creatorId: user.id, isComplete: true, listId: listId })
+				Todo.deleteMany({ creatorId: user.id, isComplete: true, masterId: listId })
 					.then(() => {
 						return { message: 'Deleted' };
 					})
@@ -189,7 +189,7 @@ module.exports = {
 			if (user) {
 				const list = await TodoList.find({ _id: listId });
 				if (list) {
-					Todo.deleteMany({ listId }).then(() => {
+					Todo.deleteMany({ masterId: listId }).then(() => {
 						TodoList.findOneAndDelete({ _id: listId }).then(() => {
 							console.log('deleted todo list');
 						});
