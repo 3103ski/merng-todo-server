@@ -55,7 +55,6 @@ module.exports = gql`
 		getUserLists(userId: ID!): [TodoList]
 		getUserTodos(userId: ID!): [Todo]
 	}
-
 	type Mutation {
 		# Auth
 		register(registerInput: RegisterInput): User!
