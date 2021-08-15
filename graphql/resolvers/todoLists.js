@@ -135,6 +135,7 @@ module.exports = {
 			return Todo.findById(todoId).then((todo) => todo);
 		},
 		async deleteTodo(_, { todoId }, context) {
+			console.log('deleting a todo');
 			const user = checkAuth(context);
 			if (user) {
 				const todo = await Todo.findById(todoId);

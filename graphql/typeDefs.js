@@ -61,10 +61,12 @@ module.exports = gql`
 		getUserLists(userId: ID!): [TodoList]
 		getUserTodos(userId: ID!): [Todo]
 	}
+
 	type Mutation {
 		# Auth
 		register(registerInput: RegisterInput): User!
 		login(username: String!, password: String!): User!
+		updateSettings(darkMode: Boolean, darkText: Boolean, squareEdges: Boolean): User
 		# write
 		createTodoList(title: String!, color: String!): TodoList!
 		addTodoListItem(masterId: ID!, listId: ID!, title: String!, isSubTask: Boolean): Todo!

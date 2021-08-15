@@ -1,6 +1,7 @@
 const User = require('../../models/User');
 const bcrypt = require('bcrypt');
 const { UserInputError } = require('apollo-server-express');
+const checkAuth = require('../../util/checkAuth');
 const jwt = require('jsonwebtoken');
 
 const { SERCRET_KEY } = require('../../config');
@@ -31,6 +32,35 @@ module.exports = {
 		},
 	},
 	Mutation: {
+		async updateSettings(_, { darkMode, darkText, squareEdges }, context) {
+			const user = checkAuth(context);
+			const updatedSettings = {};
+
+			if (darkMode) {
+				console.log('We have dark mode updates', darkMode);
+				updatedSettings.darkMode = await darkMode;
+			}
+			if (darkText) {
+				console.log('We have dark text updates', darkText);
+				updatedSettings.darkText = await darkText;
+			}
+			if (squareEdges) {
+				console.log('We have square edges', squareEdges);
+				updatedSettings.squareEdges = await squareEdges;
+			}
+
+			if (user) {
+				console.log('updating something', updatedSettings);
+				await User.findByIdAndUpdate(user.id, {
+					$set: {
+						userSettings: { ...updatedSettings },
+					},
+				});
+				const updatedUser = await User.findById(user.id);
+				console.log('Updated User ?? :: ', updatedUser);
+				return updatedUser;
+			}
+		},
 		async login(_, { username, password }) {
 			const user = await User.findOne({ username });
 			console.log('the user loggin in :: ', user._doc);
