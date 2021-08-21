@@ -18,6 +18,10 @@ const userSchema = new Schema({
 			type: Boolean,
 			default: false,
 		},
+		showPopups: {
+			type: Boolean,
+			default: false,
+		},
 	},
 });
 

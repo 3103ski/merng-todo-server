@@ -14,7 +14,14 @@ module.exports = {
 			}
 		},
 		async getUserLists(_, { userId }) {
-			const todoLists = await TodoList.find({ creatorId: userId });
+			const todoLists = await TodoList.find({ creatorId: userId }).then((lists) => {
+				const updatedLists = lists.map(async (list) => {
+					const todoCount = await Todo.find({ listId: list.id }).length;
+					list.todoCount = todoCount;
+					return list;
+				});
+				return updatedLists;
+			});
 			return todoLists;
 		},
 		async getUserTodos(_, { userId }) {

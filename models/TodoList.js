@@ -17,6 +17,9 @@ const todoListSchema = new Schema(
 			type: String,
 			required: true,
 		},
+		todoCount: {
+			type: Number,
+		},
 		participants: [
 			{
 				type: Schema.Types.ObjectId,

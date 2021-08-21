@@ -4,6 +4,7 @@ module.exports = gql`
 	type UserSettings {
 		darkMode: Boolean
 		darkText: Boolean
+		showPopups: Boolean
 		squareEdges: Boolean
 	}
 	type User {
@@ -66,7 +67,12 @@ module.exports = gql`
 		# Auth
 		register(registerInput: RegisterInput): User!
 		login(username: String!, password: String!): User!
-		updateSettings(darkMode: Boolean, darkText: Boolean, squareEdges: Boolean): User
+		updateSettings(
+			darkMode: Boolean
+			darkText: Boolean
+			squareEdges: Boolean
+			showPopups: Boolean
+		): User
 		# write
 		createTodoList(title: String!, color: String!): TodoList!
 		addTodoListItem(masterId: ID!, listId: ID!, title: String!, isSubTask: Boolean): Todo!

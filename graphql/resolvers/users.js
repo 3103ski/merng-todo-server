@@ -23,6 +23,7 @@ module.exports = {
 		async getUser(_, { userId }) {
 			const user = User.findById(userId);
 			if (user) {
+				console.log('This user :: ', user);
 				return user;
 			}
 		},
@@ -32,39 +33,39 @@ module.exports = {
 		},
 	},
 	Mutation: {
-		async updateSettings(_, { darkMode, darkText, squareEdges }, context) {
+		async updateSettings(_, { darkMode, darkText, squareEdges, showPopups }, context) {
 			const user = checkAuth(context);
+
+			console.log('Updating :: ', showPopups);
 			const updatedSettings = {};
 
 			if (darkMode) {
-				console.log('We have dark mode updates', darkMode);
 				updatedSettings.darkMode = await darkMode;
 			}
 			if (darkText) {
-				console.log('We have dark text updates', darkText);
 				updatedSettings.darkText = await darkText;
 			}
 			if (squareEdges) {
-				console.log('We have square edges', squareEdges);
 				updatedSettings.squareEdges = await squareEdges;
+			}
+			if (showPopups) {
+				updatedSettings.showPopups = await showPopups;
 			}
 
 			if (user) {
-				console.log('updating something', updatedSettings);
 				await User.findByIdAndUpdate(user.id, {
 					$set: {
 						userSettings: { ...updatedSettings },
 					},
 				});
 				const updatedUser = await User.findById(user.id);
-				console.log('Updated User ?? :: ', updatedUser);
 				return updatedUser;
 			}
 		},
 		async login(_, { username, password }) {
 			const user = await User.findOne({ username });
-			console.log('the user loggin in :: ', user._doc);
 
+			console.log('This User :: ', user);
 			if (!user) {
 				throw new UserInputError('User not found', {
 					errors: {
