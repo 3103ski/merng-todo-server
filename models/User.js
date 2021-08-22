@@ -20,7 +20,7 @@ const userSchema = new Schema({
 		},
 		showPopups: {
 			type: Boolean,
-			default: false,
+			default: true,
 		},
 	},
 });
