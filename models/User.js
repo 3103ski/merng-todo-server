@@ -10,10 +10,6 @@ const userSchema = new Schema({
 			type: Boolean,
 			default: false,
 		},
-		darkText: {
-			type: Boolean,
-			default: false,
-		},
 		squareEdges: {
 			type: Boolean,
 			default: false,

@@ -33,24 +33,14 @@ module.exports = {
 		},
 	},
 	Mutation: {
-		async updateSettings(_, { darkMode, darkText, squareEdges, showPopups }, context) {
+		async updateSettings(_, { darkMode, squareEdges, showPopups }, context) {
 			const user = checkAuth(context);
 
-			console.log('Updating :: ', showPopups);
-			const updatedSettings = {};
-
-			if (darkMode) {
-				updatedSettings.darkMode = await darkMode;
-			}
-			if (darkText) {
-				updatedSettings.darkText = await darkText;
-			}
-			if (squareEdges) {
-				updatedSettings.squareEdges = await squareEdges;
-			}
-			if (showPopups) {
-				updatedSettings.showPopups = await showPopups;
-			}
+			const updatedSettings = await {
+				darkMode,
+				squareEdges,
+				showPopups,
+			};
 
 			if (user) {
 				await User.findByIdAndUpdate(user.id, {
